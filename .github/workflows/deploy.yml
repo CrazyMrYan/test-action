@@ -1,0 +1,31 @@
+name: Docker Image CI # Actions名称
+
+on: [push] # 执行时机
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@master
+
+      - name: install
+        run: yarn
+
+      - name: build project
+        run: yarn run build
+        
+      - name: Build the Docker image # 步骤名字
+        run: |
+          docker login --username=${{ secrets.DOCKER_USERNAME }} registry.cn-hangzhou.aliyuncs.com --password=${{ secrets.DOCKER_PASSWORD }}
+          docker build -t bilibili-vue:latest . 
+          docker tag bilibili-vue registry.cn-hangzhou.aliyuncs.com/zlyyyy/bilibili-vue:latest
+          docker push registry.cn-hangzhou.aliyuncs.com/zlyyyy/bilibili-vue:latest # 推送
+      - name: ssh docker login
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: cd ~ && sh bilibili-vue-deploy.sh ${{ secrets.DOCKER_USERNAME }} ${{ secrets.DOCKER_PASSWORD }}
