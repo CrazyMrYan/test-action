@@ -1,17 +1,72 @@
-name: GitHub Actions Demo
-on: [push]
-jobs:
-  Explore-GitHub-Actions:
-    runs-on: ubuntu-latest
-    steps:
-      - run: npm install
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - name: Check out repository code
-        uses: actions/checkout@v3
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
-        run: |
-          ls ${{ github.workspace }}
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+stages:
+- install
+- deploy
+
+cache:
+  key: ${CI_BUILD_REF_NAME}
+  paths:
+    - node_modules/
+    
+install-staging:dep: # Jobs 表示构建工作，表示某个 Stage 里面执行的工作。
+  stage: install
+  tags:
+    - vue-runner1 #runner执行器的名字,与注册runner时填写的tags保持一致
+  only: # 定义了只有在被merge到了master分支上 才会执行部署脚本。
+  - master
+  script:
+  - echo "=====start install======"
+  - yarn install  #安装依赖
+  - echo "=====end install======"
+  artifacts:  # 将这个job生成的依赖传递给下一个job。需要设置dependencies
+    expire_in: 60 mins   # artifacets 的过期时间，因为这些数据都是直接保存在 Gitlab 机器上的，过于久远的资源就可以删除掉了
+    paths:  # 需要被传递给下一个job的目录。
+    - node_modules/
+    
+deploy-staging:dep:
+  stage: deploy
+  tags:
+    - vue-runner1
+  only:
+  - master
+  script:
+  - echo "=====start build======"
+  - yarn build  # 将项目打包
+  - echo "=====end build======"
+  - echo "=====start deploy======"
+  - sudo cp -rf ./dist/  /usr/share/nginx/html/
+  - echo "=====end deploy!!!!!!======"
+  - install
+  - deploy
+cache:
+  key: ${CI_BUILD_REF_NAME}
+  paths:
+    - node_modules/
+    
+install-staging:dep: # Jobs 表示构建工作，表示某个 Stage 里面执行的工作。
+  stage: install
+  tags:
+    - vue-runner1 #runner执行器的名字,与注册runner时填写的tags保持一致
+  only: # 定义了只有在被merge到了master分支上 才会执行部署脚本。
+  - master
+  script:
+  - echo "=====start install======"
+  - yarn install  #安装依赖
+  - echo "=====end install======"
+  artifacts:  # 将这个job生成的依赖传递给下一个job。需要设置dependencies
+    expire_in: 60 mins   # artifacets 的过期时间，因为这些数据都是直接保存在 Gitlab 机器上的，过于久远的资源就可以删除掉了
+    paths:  # 需要被传递给下一个job的目录。
+    - node_modules/
+    
+deploy-staging:dep:
+  stage: deploy
+  tags:
+    - vue-runner1
+  only:
+  - master
+  script:
+  - echo "=====start build======"
+  - yarn build  # 将项目打包
+  - echo "=====end build======"
+  - echo "=====start deploy======"
+  - sudo cp -rf ./dist/  /usr/share/nginx/html/
+  - echo "=====end deploy!!!!!!======"
