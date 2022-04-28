@@ -1,72 +1,20 @@
-stages:
-- install
-- deploy
+name: Build and Deploy
+on: [push]
+jobs:
+  build-and-deploy:
+    concurrency: ci-${{ github.ref }} # Recommended if you intend to make multiple deployments in quick succession.
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
 
-cache:
-  key: ${CI_BUILD_REF_NAME}
-  paths:
-    - node_modules/
-    
-install-staging:dep: # Jobs 表示构建工作，表示某个 Stage 里面执行的工作。
-  stage: install
-  tags:
-    - vue-runner1 #runner执行器的名字,与注册runner时填写的tags保持一致
-  only: # 定义了只有在被merge到了master分支上 才会执行部署脚本。
-  - master
-  script:
-  - echo "=====start install======"
-  - yarn install  #安装依赖
-  - echo "=====end install======"
-  artifacts:  # 将这个job生成的依赖传递给下一个job。需要设置dependencies
-    expire_in: 60 mins   # artifacets 的过期时间，因为这些数据都是直接保存在 Gitlab 机器上的，过于久远的资源就可以删除掉了
-    paths:  # 需要被传递给下一个job的目录。
-    - node_modules/
-    
-deploy-staging:dep:
-  stage: deploy
-  tags:
-    - vue-runner1
-  only:
-  - master
-  script:
-  - echo "=====start build======"
-  - yarn build  # 将项目打包
-  - echo "=====end build======"
-  - echo "=====start deploy======"
-  - sudo cp -rf ./dist/  /usr/share/nginx/html/
-  - echo "=====end deploy!!!!!!======"
-  - install
-  - deploy
-cache:
-  key: ${CI_BUILD_REF_NAME}
-  paths:
-    - node_modules/
-    
-install-staging:dep: # Jobs 表示构建工作，表示某个 Stage 里面执行的工作。
-  stage: install
-  tags:
-    - vue-runner1 #runner执行器的名字,与注册runner时填写的tags保持一致
-  only: # 定义了只有在被merge到了master分支上 才会执行部署脚本。
-  - master
-  script:
-  - echo "=====start install======"
-  - yarn install  #安装依赖
-  - echo "=====end install======"
-  artifacts:  # 将这个job生成的依赖传递给下一个job。需要设置dependencies
-    expire_in: 60 mins   # artifacets 的过期时间，因为这些数据都是直接保存在 Gitlab 机器上的，过于久远的资源就可以删除掉了
-    paths:  # 需要被传递给下一个job的目录。
-    - node_modules/
-    
-deploy-staging:dep:
-  stage: deploy
-  tags:
-    - vue-runner1
-  only:
-  - master
-  script:
-  - echo "=====start build======"
-  - yarn build  # 将项目打包
-  - echo "=====end build======"
-  - echo "=====start deploy======"
-  - sudo cp -rf ./dist/  /usr/share/nginx/html/
-  - echo "=====end deploy!!!!!!======"
+      - name: Install and Build 🔧 # This example project is built using npm and outputs the result to the 'build' folder. Replace with the commands required to build your project, or remove this step entirely if your site is pre-built.
+        run: |
+          npm ci
+          npm run build
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v3.7.1
+        with:
+          branch: gh-pages # The branch the action should deploy to.
+          folder: build # The folder the action should deploy.
