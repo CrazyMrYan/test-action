@@ -32,7 +32,22 @@ jobs:
       - name: Build Dependencies
         run: npm run build
         
-      - name: Test
-        run: npm test
+      - name: CD Dist
+        run: cd dist
+        
+      - name: Git Init
+        run: git init
+        
+      - name: Git Add
+        run: git add .
+        
+      - name: Git Push
+        run: git push -f git@github.com:<CrazyMrYan>/<test-action>.git main:gh-pages  
+        
         env:
           CI: true
+
+
+
+
+
