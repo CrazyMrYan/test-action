@@ -32,17 +32,13 @@ jobs:
       - name: Build Dependencies
         run: npm run build
         
-      - name: CD Dist
-        run: cd dist
-        
-      - name: Git Init
-        run: git init
-        
-      - name: Git Add
-        run: git add .
-        
-      - name: Git Push
-        run: git push -f git@github.com:<CrazyMrYan>/<test-action>.git main:gh-pages  
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: dist
+          BASE_BRANCH: main
         
         env:
           CI: true
