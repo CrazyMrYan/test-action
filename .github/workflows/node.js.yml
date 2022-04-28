@@ -31,14 +31,17 @@ jobs:
         
       - name: Build Dependencies
         run: npm run build
+      
+      - name: cd
+        run: cd dist
         
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@3.7.1
         with:
-          token: ${{ env.ACCESS_TOKEN }}
-          branch: gh-pages
-          folder: dist
-          base_branch: main
+          GITHUB_TOKEN: ${{ env.ACCESS_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: dist
+          BASE_BRANCH: main
         
         env:
           CI: true
