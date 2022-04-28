@@ -13,7 +13,7 @@
 ## Todos 📋
 
  - [ ] Custom Regex Validation
- - [ ] Validation with Vuelidate
+ - [ ] Validation with Vuelidate111
  - [ ] Validation with VeeValidate
  - [ ] Configure Vuetify Loader
  - [ ] Remove Single Field
