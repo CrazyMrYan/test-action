@@ -28,7 +28,10 @@ jobs:
   
       - name: Install Dependencies
         run: npm install
-  
+        
+      - name: Build Dependencies
+        run: npm run build
+        
       - name: Test
         run: npm test
         env:
