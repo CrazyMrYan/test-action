@@ -33,7 +33,7 @@ jobs:
         run: npm run build
         
       - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@4.3.3
+        uses: JamesIves/github-pages-deploy-action@3.7.1
         with:
           token: ${{ env.ACCESS_TOKEN }}
           branch: gh-pages
