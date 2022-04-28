@@ -26,7 +26,7 @@ jobs:
 
     env:
 
-      ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+      ACCESS_TOKEN: ${{ env.ACCESS_TOKEN }}
 
       BRAHCN: gh-pages
 
