@@ -22,7 +22,7 @@ jobs:
 
       - name: Build
 
-        uses: JamesIves/github-pages-deploy-action-action@master
+        uses: JamesIves/github-pages-deploy-action@v4.3.3
 
     env:
 
